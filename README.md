@@ -4,7 +4,7 @@ Slickplan Importer component for Joomla 2.5 and 3.x, imports pages from a [Slick
 
 ## Installation
 
-1. [Download zip](https://github.com/slickplan/joomla-slickplan-importer/archive/master.zip) file and upload it on 'Extensions > Extension Manager > Upload Package File' page.
+1. [Download zip](archive/master.zip) file and upload it on 'Extensions > Extension Manager > Upload Package File' page.
 2. Navigate to 'Components > Slickplan Importer'
 
 If the 'Import for K2 Content' options is checked it will imports pages in K2 instance instead of default Joomla pages.
