@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="2.5.0" method="upgrade">
+    <name>Slickplan Importer</name>
+    <author>Slickplan.com</author>
+    <authorUrl>http://slickplan.com/</authorUrl>
+    <license>GPLv2 or later</license>
+    <version>2.0.0</version>
+    <description>Import pages from the Slickplan’s XML file.</description>
+    <administration>
+        <menu>COM_SLICKPLANIMPORTER</menu>
+        <files folder="admin">
+            <filename>index.html</filename>
+            <filename>slickplanimporter.php</filename>
+            <filename>slickplan-importer.php</filename>
+			<folder>views</folder>
+        </files>
+        <languages folder="language">
+            <language tag="en-GB">admin/en-GB/en-GB.com_slickplanimporter.sys.ini</language>
+        </languages>
+    </administration>
+</extension>
