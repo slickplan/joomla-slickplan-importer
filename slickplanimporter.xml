@@ -3,7 +3,7 @@
     <name>Slickplan Importer</name>
     <author>Slickplan.com</author>
     <authorUrl>http://slickplan.com/</authorUrl>
-    <license>GPLv2 or later</license>
+	<license>GPL-3.0</license>
     <version>2.0.0</version>
     <description>Import pages from the Slickplan’s XML file.</description>
     <administration>
