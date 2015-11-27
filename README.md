@@ -1,6 +1,8 @@
 # [Slickplan](http://slickplan.com) Importer - Joomla Component
 
-Slickplan Importer component for Joomla 2.5 and 3.x, imports pages from a [Slickplan.com](http://slickplan.com)’s XML export file into your Joomla site.
+The Slickplan import component allows you to quickly import your [Slickplan.com](http://slickplan.com) projects into your Joomla 2.5 and 3.x site.
+
+When you are finished planning your website project, import your [Slickplan.com](http://slickplan.com) website plan. Upon import, your pages, navigation structure, and content will be instantly ready in your CMS.
 
 ## Installation
 
