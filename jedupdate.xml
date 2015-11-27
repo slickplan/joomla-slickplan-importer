@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jedupdate version="1">
+    <core_body>The Slickplan import component allows you to quickly import your Slickplan.com projects into your Joomla 2.5 and 3.x site.
+
+When you are finished planning your website project, import your Slickplan.com website plan. Upon import, your pages, navigation structure, and content will be instantly ready in your CMS.</core_body>
+
+    <homepage_link>https://slickplan.com/</homepage_link>
+    <download_link>http://help.slickplan.com/hc/en-us/article_attachments/202218523/com_slickplanimporter_2.0.0.zip</download_link>
+    <demo_link></demo_link>
+    <documentation_link>https://github.com/slickplan/joomla-slickplan-importer</documentation_link>
+    <support_link>https://slickplan.com/contact</support_link>
+    <license_link></license_link>
+
+    <version>2.0.0</version>
+
+    <compatibility>
+        <version>25</version>
+        <version>30</version>
+    </compatibility>
+</jedupdate>
