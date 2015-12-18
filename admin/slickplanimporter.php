@@ -173,10 +173,22 @@ if (!class_exists('Slickplan_Importer_Controller')) {
             $file_name = isset($attrs['file_name']) ? $attrs['file_name'] : basename($url);
             $file_name = JFile::makeSafe($file_name);
 
-            $upload_path = JPATH_SITE . DS . 'media' . DS . $file_name;
+            $path = '/media/';
 
-            if (JFile::write($upload_path, file_get_contents($url))) {
-                return JURI::base() . '/media/' . $file_name;
+            $upload_path = JPATH_SITE . DS . 'media';
+            if (!is_dir($upload_path . DS . 'slickplan')) {
+                @mkdir($upload_path . DS . 'slickplan', 0777);
+            }
+            if (is_dir($upload_path . DS . 'slickplan')) {
+                $upload_path .= DS . 'slickplan';
+                $path .= 'slickplan/';
+            }
+            $upload_path .= DS . $file_name;
+            
+            $file = file_get_contents($url);
+
+            if (JFile::write($upload_path, $file)) {
+                return rtrim(JURI::root(), '/') . $path . $file_name;
             }
             return false;
         }
