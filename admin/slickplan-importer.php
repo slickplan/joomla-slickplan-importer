@@ -186,17 +186,30 @@ if (!class_exists('Slickplan_Importer')) {
                         if (isset($array['diagram'])) {
                             unset($array['diagram']);
                         }
+                        if (isset($array['section']['options'])) {
+                            $array['section'] = array($array['section']);
+                        }
                         $array['sitemap'] = $this->_getMultidimensionalArrayHelper($array);
                         $array['users'] = array();
-                        foreach ($array['section'] as $section) {
+                        foreach ($array['section'] as $section_key => $section) {
                             if (isset($section['cells']['cell']) and is_array($section['cells']['cell'])) {
-                                foreach ($section['cells']['cell'] as $cell) {
+                                foreach ($section['cells']['cell'] as $cell_key => $cell) {
+                                    if (
+                                        isset($section['options']['id'], $cell['level'])
+                                        and $cell['level'] === 'home'
+                                        and $section['options']['id'] !== 'svgmainsection'
+                                    ) {
+                                        unset($array['section'][$section_key]['cells']['cell'][$cell_key]);
+                                    }
                                     if (isset(
                                         $cell['contents']['assignee']['@value'],
                                         $cell['contents']['assignee']['@attributes']
                                     )) {
                                         $array['users'][$cell['contents']['assignee']['@value']]
                                             = $cell['contents']['assignee']['@attributes'];
+                                    }
+                                    if (isset($cell['@attributes']['id'])) {
+                                        $array['pages'][$cell['@attributes']['id']] = $cell;
                                     }
                                 }
                             }
@@ -284,7 +297,10 @@ if (!class_exists('Slickplan_Importer')) {
                     if (isset($array['sitemap']) and is_array($array['sitemap'])) {
                         return true;
                     }
-                } elseif (isset($array['section'][0]['options']['id'], $array['section'][0]['cells'])) {
+                } elseif (
+                    isset($array['section']['options']['id'], $array['section']['cells'])
+                    or isset($array['section'][0]['options']['id'], $array['section'][0]['cells'])
+                ) {
                     return true;
                 }
             }
