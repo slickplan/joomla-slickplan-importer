@@ -1,5 +1,7 @@
-<?php defined('_JEXEC') or die; ?>
-<?php global $slickplan; ?>
+<?php
+defined('_JEXEC') or exit('Restricted access.');
+global $slickplan;
+?>
 
 <div class="wrap" id="slickplan-importer">
     <form action="" method="post" enctype="multipart/form-data">
@@ -47,18 +49,20 @@
                 <legend><span>Pages Settings</span></legend>
                 <label for="slickplan-content-contents">
                     <input type="radio" name="slickplan_importer[content]" id="slickplan-content-contents" value="contents" checked>
-                    Import page content
+                    Import page content from Content Planner
                 </label>
-                <div class="content-suboption">
-                    <label for="slickplan-content_files">
-                        <input type="checkbox" name="slickplan_importer[content_files]" id="slickplan-content_files" value="1">
-                        Import files to media manager
-                    </label>
-                    <p class="description ">Downloading files may take a while</p>
-                </div>
+                <?php if ($slickplan->no_of_files) { ?>
+                    <div class="content-suboption">
+                        <label for="slickplan-content_files">
+                            <input type="checkbox" name="slickplan_importer[content_files]" id="slickplan-content_files" value="1">
+                            Import files to media manager
+                        </label>
+                        <p class="description ">Downloading files may take a while, approx total size: <?php echo $slickplan->filesize_total; ?></p>
+                    </div>
+                <?php } ?>
                 <label for="slickplan-content-notes">
                     <input type="radio" name="slickplan_importer[content]" id="slickplan-content-notes" value="desc">
-                    Import page notes as content
+                    Import notes as pages content
                 </label>
                 <label for="slickplan-content-none">
                     <input type="radio" name="slickplan_importer[content]" id="slickplan-content-none" value="">

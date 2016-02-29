@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or exit('Restricted access.');
 
 if (!class_exists('Slickplan_Importer')) {
 

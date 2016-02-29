@@ -1,6 +1,11 @@
 <?php defined('_JEXEC') or exit('Restricted access.');
 
-ob_start();
+function_exists('ob_start') and ob_start();
+function_exists('set_time_limit') and set_time_limit(600);
+
+if (!class_exists('ContentHelperRoute')) {
+    require_once JPATH_SITE . DS . 'components' . DS . 'com_content' . DS . 'helpers' . DS . 'route.php';
+}
 
 if (!class_exists('Slickplan_Importer_Controller')) {
 
@@ -31,6 +36,20 @@ if (!class_exists('Slickplan_Importer_Controller')) {
         public $xml = array();
 
         /**
+         * Number of files in XML file
+         *
+         * @var int
+         */
+        public $no_of_files = 0;
+
+        /**
+         * Total files size in bytes
+         *
+         * @var int
+         */
+        public $filesize_total = 0;
+
+        /**
          * Import summary
          *
          * @var array
@@ -45,6 +64,13 @@ if (!class_exists('Slickplan_Importer_Controller')) {
         private $_options = array();
 
         /**
+         * If page has unparsed internal pages
+         *
+         * @var bool
+         */
+        private $_has_unparsed_internal_links = false;
+
+        /**
          * Plugin router
          */
         public function __construct()
@@ -54,6 +80,25 @@ if (!class_exists('Slickplan_Importer_Controller')) {
             if (isset($_FILES['slickplanfile']) and $_FILES['slickplanfile']) {
                 $result = $this->handleFileUpload();
                 if ($result === true and $this->_isCorrectSlickplanXmlFile($this->xml, true)) {
+                    $this->filesize_total = array();
+                    if (isset($this->xml['pages']) and is_array($this->xml['pages'])) {
+                        foreach ($this->xml['pages'] as $page) {
+                            if (isset($page['contents']['body']) and is_array($page['contents']['body'])) {
+                                foreach ($page['contents']['body'] as $body) {
+                                    if (isset($body['content']['type']) and $body['content']['type'] === 'library') {
+                                        ++$this->no_of_files;
+                                    }
+                                    if (isset($body['content']['file_size'], $body['content']['file_id']) and $body['content']['file_size']) {
+                                        $this->filesize_total[$body['content']['file_id']] = (int)$body['content']['file_size'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $this->filesize_total = array_sum($this->filesize_total);
+                    $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+                    $factor = (int)floor((strlen($this->filesize_total) - 1) / 3);
+                    $this->filesize_total = round($this->filesize_total / pow(1024, $factor)) . $size[$factor];
                     $this->view = 'options';
                 } else {
                     $this->_displayMessage($result, 'error');
@@ -89,6 +134,14 @@ if (!class_exists('Slickplan_Importer_Controller')) {
                 } else {
                     $this->_displayMessage($result, 'error');
                 }
+            }
+            else {
+                $this->_displayMessage(array(
+                    'The Slickplan Importer plugin allows you to quickly import your '
+                        . '<a href="http://slickplan.com" target="_blank">Slickplan</a> projects into your Joomla! site.',
+                    'Upon import, your pages, navigation structure, and content will be instantly ready in your CMS.',
+                    'Pick a XML file to upload and click Import.',
+                ));
             }
         }
 
@@ -141,12 +194,12 @@ if (!class_exists('Slickplan_Importer_Controller')) {
                     $page['title'] .= ' (draft)';
                 }
                 if (isset($page['ID']) and $page['ID']) {
-                    if (isset($this->xml['options']['k2']) and $this->xml['options']['k2']) {
-                        $link = 'com_k2&view=item&cid=';
-                    } else {
-                        $link = 'com_content&task=article.edit&a_id=';
-                    }
-                    echo '<a href="index.php?option=', $link, $page['ID'], '">', $page['title'] . '</a>';
+//                    if (isset($this->xml['options']['k2']) and $this->xml['options']['k2']) {
+//                        $link = 'com_k2&view=item&cid=';
+//                    } else {
+//                        $link = 'com_content&task=article.edit&a_id=';
+//                    }
+                    echo '<a href="', $page['full_url'], '">', $page['title'] . '</a>';
                 } elseif (isset($page['error']) and $page['error']) {
                     echo $page['title'], ' - <span style="color: #e00;">', $page['error'] . '</span>';
                 }
@@ -184,7 +237,7 @@ if (!class_exists('Slickplan_Importer_Controller')) {
                 $path .= 'slickplan/';
             }
             $upload_path .= DS . $file_name;
-            
+
             $file = file_get_contents($url);
 
             if (JFile::write($upload_path, $file)) {
@@ -217,15 +270,25 @@ if (!class_exists('Slickplan_Importer_Controller')) {
             $this->_options = array(
                 'titles' => isset($form['titles_change']) ? $form['titles_change'] : '',
                 'content' => isset($form['content']) ? $form['content'] : '',
-                'content_files' => (isset($form['content_files']) and $form['content_files']),
+                'content_files' => (
+                    isset($form['content'], $form['content_files'])
+                    and $form['content'] === 'contents'
+                    and $form['content_files']
+                ),
                 'k2' => (isset($form['k2']) and $form['k2']),
                 'users' => isset($form['users_map']) ? $form['users_map'] : array(),
+                'internal_links' => array(),
+                'imported_pages' => array(),
             );
+
             foreach (array('home', '1', 'util', 'foot') as $type) {
                 if (isset($this->xml['sitemap'][$type]) and is_array($this->xml['sitemap'][$type])) {
                     $this->_importPages($this->xml['sitemap'][$type]);
                 }
             }
+
+            $this->_checkForInternalLinks();
+
             $this->xml = array(
                 'summary' => $this->_getMultidimensionalArray($this->_summary, 0, true),
                 'options' => $this->_options,
@@ -291,6 +354,14 @@ if (!class_exists('Slickplan_Importer_Controller')) {
                 }
             }
 
+            $this->_has_unparsed_internal_links = false;
+            if ($page['fulltext']) {
+                $updated_content = $this->_parseInternalLinks($page['fulltext']);
+                if ($updated_content) {
+                    $page['fulltext'] = $updated_content;
+                }
+            }
+
             // Set post status
             if (isset($data['contents']['status']) and $data['contents']['status'] === 'draft') {
                 $page['published'] = 0;
@@ -342,6 +413,27 @@ if (!class_exists('Slickplan_Importer_Controller')) {
             } else {
                 $page['ID'] = $row->id;
                 $page['post_parent'] = $parent_id;
+
+                $page['full_url'] = ContentHelperRoute::getArticleRoute($page['ID'] . ':' . $page['alias'], $page['catid']);
+                $router = new JRouterSite(array('mode' => JROUTER_MODE_SEF));
+                $page['full_url'] = $router
+                    ->build($page['full_url'])
+                    ->toString(array('path', 'query', 'fragment'));
+                $page['full_url'] = str_replace(array(
+                    '/administrator',
+                    'component/content/article/',
+                ), '', $page['full_url']);
+
+                // Save page permalink
+                if (isset($data['@attributes']['id'])) {
+                    $this->_options['imported_pages'][$data['@attributes']['id']] = $page['full_url'];
+                }
+
+                // Check if page has unparsed internal links, we need to replace them later
+                if ($this->_has_unparsed_internal_links) {
+                    $this->_options['internal_links'][] = $page['ID'];
+                }
+
                 $this->_summary[] = $page;
                 if (isset($data['childs']) and is_array($data['childs']) and $page['ID']) {
                     $this->_importPages($data['childs'], $page['ID']);
@@ -376,6 +468,64 @@ if (!class_exists('Slickplan_Importer_Controller')) {
                     $errors = trim($errors);
                     if ($errors) {
                         echo '<div class="alert alert-', $type, '">' . $errors . '</div>';
+                    }
+                }
+            }
+        }
+
+        /**
+         * Replace internal links with correct pages URLs.
+         *
+         * @param $content
+         * @param $force_parse
+         * @return bool
+         */
+        private function _parseInternalLinks($content, $force_parse = false)
+        {
+            preg_match_all('/href="slickplan:([a-z0-9]+)"/isU', $content, $internal_links);
+            if (isset($internal_links[1]) and is_array($internal_links[1]) and count($internal_links[1])) {
+                $internal_links = array_unique($internal_links[1]);
+                $links_replace = array();
+                foreach ($internal_links as $cell_id) {
+                    if (
+                        isset($this->_options['imported_pages'][$cell_id])
+                        and $this->_options['imported_pages'][$cell_id]
+                    ) {
+                        $links_replace['="slickplan:' . $cell_id . '"'] = '="'
+                            . htmlspecialchars($this->_options['imported_pages'][$cell_id]) . '"';
+                    } elseif ($force_parse) {
+                        $links_replace['="slickplan:' . $cell_id . '"'] = '="#"';
+                    } else {
+                        $this->_has_unparsed_internal_links = true;
+                    }
+                }
+                if (count($links_replace)) {
+                    return strtr($content, $links_replace);
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Check if there are any pages with unparsed internal links, if yes - replace links with real URLs
+         */
+        private function _checkForInternalLinks()
+        {
+            if (isset($this->_options['internal_links']) and is_array($this->_options['internal_links'])) {
+                foreach ($this->_options['internal_links'] as $page_id) {
+                    if ($this->_options['k2'] and is_dir(JPATH_ADMINISTRATOR . '/components/com_k2/tables')) {
+                        $page = JTable::getInstance('K2Item', 'Table');
+                    }
+                    else {
+                        $page = JTable::getInstance('Content', 'JTable');
+                    }
+                    $page->load($page_id);
+                    if (isset($page->fulltext) and $page->fulltext) {
+                        $page_content = $this->_parseInternalLinks($page->fulltext, true);
+                        if ($page_content) {
+                            $page->fulltext = $page_content;
+                            $page->store();
+                        }
                     }
                 }
             }
