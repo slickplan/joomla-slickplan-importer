@@ -4,7 +4,7 @@ function_exists('ob_start') and ob_start();
 function_exists('set_time_limit') and set_time_limit(600);
 
 if (!class_exists('ContentHelperRoute')) {
-    require_once JPATH_SITE . DS . 'components' . DS . 'com_content' . DS . 'helpers' . DS . 'route.php';
+    require_once JPATH_SITE . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_content' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'route.php';
 }
 
 if (!class_exists('Slickplan_Importer_Controller')) {
@@ -228,15 +228,15 @@ if (!class_exists('Slickplan_Importer_Controller')) {
 
             $path = '/media/';
 
-            $upload_path = JPATH_SITE . DS . 'media';
-            if (!is_dir($upload_path . DS . 'slickplan')) {
-                @mkdir($upload_path . DS . 'slickplan', 0777);
+            $upload_path = JPATH_SITE . DIRECTORY_SEPARATOR . 'media';
+            if (!is_dir($upload_path . DIRECTORY_SEPARATOR . 'slickplan')) {
+                @mkdir($upload_path . DIRECTORY_SEPARATOR . 'slickplan', 0777);
             }
-            if (is_dir($upload_path . DS . 'slickplan')) {
-                $upload_path .= DS . 'slickplan';
+            if (is_dir($upload_path . DIRECTORY_SEPARATOR . 'slickplan')) {
+                $upload_path .= DIRECTORY_SEPARATOR . 'slickplan';
                 $path .= 'slickplan/';
             }
-            $upload_path .= DS . $file_name;
+            $upload_path .= DIRECTORY_SEPARATOR . $file_name;
 
             $file = file_get_contents($url);
 

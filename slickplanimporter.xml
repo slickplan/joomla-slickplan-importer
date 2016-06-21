@@ -4,7 +4,7 @@
     <author>Slickplan.com</author>
     <authorUrl>http://slickplan.com/</authorUrl>
 	<license>GPL-3.0</license>
-    <version>2.1.0</version>
+    <version>2.1.1</version>
     <description>Quickly import your Slickplan project into your Joomla! site.</description>
     <administration>
         <menu>COM_SLICKPLANIMPORTER</menu>
