@@ -13,4 +13,4 @@ If the 'Import for K2 Content' options is checked it will imports pages in K2 in
 
 ## Support
 
-Having trouble with plugin? Check out the documentation at [help.slickplan.com](http://help.slickplan.com/hc/en-us/articles/203506014) or contact us directly via email [support@slickplan.com](mailto:support@slickplan.com).
+Having trouble with plugin? Check out the documentation at [help.slickplan.com](http://help.slickplan.com/hc/en-us/articles/203506014) or contact us directly via email [help@slickplan.com](mailto:help@slickplan.com).
