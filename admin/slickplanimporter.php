@@ -394,7 +394,8 @@ if (!class_exists('Slickplan_Importer_Controller')) {
 
             // Set url slug
             if (isset($data['contents']['url_slug']) and $data['contents']['url_slug']) {
-                $page['alias'] = $data['contents']['url_slug'];
+                $page['alias'] = str_replace('%page_name%', $post_title, $data['contents']['url_slug']);
+                $page['alias'] = str_replace('%separator%', '-', $page['alias']);
             }
 
 			$table = JTable::getInstance('Content', 'JTable');
