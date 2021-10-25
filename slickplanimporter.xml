@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="2.5.0" method="upgrade">
+<extension type="component" method="upgrade">
     <name>Slickplan Importer</name>
     <author>Slickplan.com</author>
-    <authorUrl>http://slickplan.com/</authorUrl>
+    <authorUrl>https://slickplan.com/</authorUrl>
 	<license>GPL-3.0</license>
-    <version>2.1.2</version>
+    <version>1.0.0</version>
     <description>Quickly import your Slickplan project into your Joomla! site.</description>
+    <namespace path="src/">Slickplan\Component\Slickplanimporter</namespace>
     <administration>
-        <menu>COM_SLICKPLANIMPORTER</menu>
+        <menu link="index.php?option=com_slickplanimporter">Slickplan Importer</menu>
         <files folder="admin">
-            <filename>index.html</filename>
-            <filename>slickplanimporter.php</filename>
-            <filename>slickplan-importer.php</filename>
-			<folder>views</folder>
+            <folder>forms</folder>
+            <folder>services</folder>
+            <folder>sql</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
         </files>
-        <languages folder="language">
-            <language tag="en-GB">admin/en-GB/en-GB.com_slickplanimporter.sys.ini</language>
-        </languages>
     </administration>
 </extension>
