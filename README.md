@@ -11,7 +11,7 @@ When you are finished planning your website project, import your [Slickplan.com]
 1. Download this repository ZIP file and upload it under 'Extensions > Extension Manager > Upload Package File' page.
 2. Navigate to 'Components > Slickplan Importer'
 
-If the 'Import for K2 Content' options is checked it will imports pages in K2 instance instead of default Joomla pages.
+If the 'Import for K2 Content' options is checked it will import pages in K2 instance instead of default Joomla pages.
 
 ## Support
 
